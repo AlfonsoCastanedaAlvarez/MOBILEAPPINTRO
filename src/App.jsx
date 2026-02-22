@@ -1,45 +1,62 @@
-import { useState } from 'react';
-import logo from './logo.svg';
+import React from 'react';
 import './App.css';
+import { QueryClient, QueryClientProvider, useQuery } from "react-query";
 
-const App = () => {
-  const [count, setCount] = useState(0);
+const fetchSchedule = async () => {
+  const url = 'https://courses.cs.northwestern.edu/394/guides/data/cs-courses.php';
+  const response = await fetch(url);
+  if (!response.ok) throw new Error("Network response was not ok");
+  return await response.json();
+};
+
+const Main = () => {
+  const { data: schedule, isLoading, error } = useQuery({
+    queryKey: ['schedule'],
+    queryFn: fetchSchedule
+  });
+
+  if (error) return <h1>{error.toString()}</h1>;
+  if (isLoading) return <h1>Loading the schedule...</h1>;
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello Vite + React!</p>
-        <p>
-          <button onClick={() => setCount(count => count + 1)}>
-            count is: {count}
-          </button>
-        </p>
-        <p>
-          Edit <code>App.jsx</code> and save to test hot module replacement (HMR).
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-          {' | '}
-          <a
-            className="App-link"
-            href="https://vitejs.dev/guide/features.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Vite Docs
-          </a>
-        </p>
-      </header>
+    <div className="container">
+      <Banner title={schedule.title} />
+      <CourseList courses={schedule.courses} />
     </div>
   );
 };
+
+const queryClient = new QueryClient();
+
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <Main />
+  </QueryClientProvider>
+);
+
+const Banner = ({ title }) => (
+  <h1>{title}</h1>
+);
+
+const CourseList = ({ courses }) => (
+  <div className="course-list">
+    {Object.entries(courses).map(([id, course]) => (
+      <Course key={id} course={course} />
+    ))}
+  </div>
+);
+
+const Course = ({ course }) => (
+  <div className="card">
+    <div className="card-body">
+      <div className="card-title">
+        {course.term} CS {course.number}
+      </div>
+      <div className="card-text">
+        {course.title}
+      </div>
+    </div>
+  </div>
+);
 
 export default App;
