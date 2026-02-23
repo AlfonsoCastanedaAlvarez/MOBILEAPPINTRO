@@ -1,5 +1,5 @@
 import './App.css';
-import { QueryClient, QueryClientProvider, useQuery } from "react-query";
+import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
 import CourseList from './components/CourseList.jsx';
 import { addScheduleTimes } from './utilities/times';
 
