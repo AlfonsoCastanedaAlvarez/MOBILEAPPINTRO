@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "mobileappintro"
-  }
+    "default": "mobileappintro",
+    "staging": "mobileappintro"
+  },
+  "targets": {},
+  "etags": {}
 }
